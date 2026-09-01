@@ -1,14 +1,14 @@
 #include "PmergeMe.hpp"
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
     if (argc < 2) {
-        std::cerr << "Error: Provide sequence of positive integers." << std::endl;
+        std::cerr << "Error" << std::endl;
         return 1;
     }
-    
-    PmergeMe sorter;
-    sorter.parseInput(argc, argv);
-    sorter.executeSort();
-    
+
+    PmergeMe pmerge;
+    pmerge.parse(argc, argv);
+    pmerge.sortAndDisplay();
+
     return 0;
 }
