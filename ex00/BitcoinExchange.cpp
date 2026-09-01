@@ -47,10 +47,8 @@ bool BitcoinExchange::isValidValue(const std::string& valueStr, float& value) co
     char* end;
     double tempVal = std::strtod(valueStr.c_str(), &end);
     
-    // Check if nothing was parsed or if string is empty
     if (valueStr.c_str() == end) return false;
-    
-    // Allow trailing 'f' for floats, otherwise ensure string ended
+
     if (*end != '\0' && !(*end == 'f' && *(end + 1) == '\0')) return false;
 
     if (tempVal < 0) {
@@ -74,7 +72,7 @@ void BitcoinExchange::loadDatabase(const std::string& filename) {
     }
 
     std::string line;
-    std::getline(file, line); // Skip header
+    std::getline(file, line);
 
     while (std::getline(file, line)) {
         if (line.empty()) continue;
@@ -102,7 +100,7 @@ void BitcoinExchange::processInput(const std::string& filename) {
     }
 
     std::string line;
-    std::getline(file, line); // Skip header
+    std::getline(file, line);
 
     while (std::getline(file, line)) {
         if (line.empty()) continue;
