@@ -2,16 +2,19 @@
 #define BITCOINEXCHANGE_HPP
 
 #include <iostream>
-#include <map>
 #include <string>
+#include <map>
+#include <fstream>
+#include <sstream>
+#include <cstdlib>
 
 class BitcoinExchange {
 private:
     std::map<std::string, float> _db;
 
+    void trim(std::string& str) const;
     bool isValidDate(const std::string& date) const;
     bool isValidValue(const std::string& valueStr, float& value) const;
-    void trim(std::string& str) const;
 
 public:
     BitcoinExchange();
