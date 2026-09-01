@@ -44,18 +44,39 @@ bool BitcoinExchange::isValidDate(const std::string& date) const {
 
 bool BitcoinExchange::isValidValue(const std::string& valueStr, float& value) const {
     char* end;
-    value = std::strtof(valueStr.c_str(), &end);
-    if (*end != '\0' && *end != 'f') return false;
-    if (value < 0) {
+    double tempVal = std::strtod(valueStr.c_str(), &end);
+    
+    if (valueStr.c_str() == end) return false; 
+    
+    if (*end != '\0' && *end != 'f') return false; 
+
+    if (tempVal < 0) {
         std::cerr << "Error: not a positive number." << std::endl;
         return false;
     }
-    if (value > 1000) {
+    if (tempVal > 1000) {
         std::cerr << "Error: too large a number." << std::endl;
         return false;
     }
+    
+    value = static_cast<float>(tempVal);
     return true;
 }
+
+// bool BitcoinExchange::isValidValue(const std::string& valueStr, float& value) const {
+//     char* end;
+//     value = std::strtof(valueStr.c_str(), &end);
+//     if (*end != '\0' && *end != 'f') return false;
+//     if (value < 0) {
+//         std::cerr << "Error: not a positive number." << std::endl;
+//         return false;
+//     }
+//     if (value > 1000) {
+//         std::cerr << "Error: too large a number." << std::endl;
+//         return false;
+//     }
+//     return true;
+// }
 
 void BitcoinExchange::loadDatabase(const std::string& filename) {
     std::ifstream file(filename.c_str());
