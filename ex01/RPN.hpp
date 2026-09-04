@@ -5,6 +5,9 @@
 #include <string>
 #include <stack>
 #include <stdexcept>
+#include <climits>
+#include <sstream>
+#include <cctype>
 
 class RPN {
 private:

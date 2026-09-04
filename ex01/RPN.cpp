@@ -1,6 +1,4 @@
 #include "RPN.hpp"
-#include <sstream>
-#include <cctype>
 
 RPN::RPN() {}
 
@@ -31,13 +29,31 @@ void RPN::performOperation(const std::string& op) {
     int left = _stack.top();
     _stack.pop();
     
-    if (op == "+") _stack.push(left + right);
-    else if (op == "-") _stack.push(left - right);
-    else if (op == "*") _stack.push(left * right);
-    else if (op == "/") {
-        if (right == 0) {
+    if (op == "+") {
+        if ((right > 0 && left > INT_MAX - right) || (right < 0 && left < INT_MIN - right)) 
+            throw std::runtime_error("Error");   
+        _stack.push(left + right);
+    }
+        
+    else if (op == "-") {
+        if ((right > 0 && left < INT_MIN + right) || (right < 0 && left > INT_MAX + right))
             throw std::runtime_error("Error");
+        _stack.push(left - right);
+    }
+
+    else if (op == "*") {
+        if (left != 0 && right != 0) {
+            if (left > 0 && right > 0 && left > INT_MAX / right) throw std::runtime_error("Error");
+            if (left > 0 && right < 0 && left < INT_MIN / right) throw std::runtime_error("Error");
+            if (left < 0 && right > 0 && left < INT_MIN / right) throw std::runtime_error("Error");
+            if (left < 0 && right < 0 && left > INT_MAX / right) throw std::runtime_error("Error");
         }
+        _stack.push(left * right);
+    }
+
+    else if (op == "/") {
+        if (right == 0 || (left == INT_MIN && right == -1))
+            throw std::runtime_error("Error");
         _stack.push(left / right);
     }
 }

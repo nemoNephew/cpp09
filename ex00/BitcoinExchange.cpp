@@ -28,6 +28,10 @@ void BitcoinExchange::trim(std::string& str) const {
 bool BitcoinExchange::isValidDate(const std::string& date) const {
     if (date.length() != 10 || date[4] != '-' || date[7] != '-') return false;
     
+    for (int i = 0; i < 10; ++i) {
+        if (i == 4 || i == 7) continue;
+        if (!std::isdigit(date[i])) return false;
+    }
     int year, month, day;
     char dash1, dash2;
     std::istringstream ss(date);
@@ -50,12 +54,13 @@ bool BitcoinExchange::isValidValue(const std::string& valueStr, float& value) co
     
     if (valueStr.c_str() == end) return false;
 
-    if (*end != '\0' && !(*end == 'f' && *(end + 1) == '\0')) return false;
+    if (*end != '\0') return false;
 
     if (tempVal < 0) {
         std::cerr << "Error: not a positive number." << std::endl;
         return false;
     }
+
     if (tempVal > 1000) {
         std::cerr << "Error: too large a number." << std::endl;
         return false;
@@ -123,11 +128,23 @@ void BitcoinExchange::processInput(const std::string& filename) {
             continue;
         }
 
+        int dotCount = 0, space = 0, atLorF = 0;
+        for (size_t i = 0; i < valueStr.length(); ++i) {
+            if (valueStr[i] == '.') {
+                if (i == valueStr.length() - 1 || i == 0)
+                    atLorF = 1;
+                dotCount++;
+            }
+            else if (valueStr[i] == ' ' || valueStr[i] == '\t')
+                space++;
+        }
+        if (valueStr.empty() || atLorF > 0 || space > 0 || dotCount > 1 || valueStr.find_first_not_of("0123456789.") != std::string::npos) {
+            std::cerr << "Error: bad input => " << line << std::endl;
+            continue;
+        }
+        
         float value;
         if (!isValidValue(valueStr, value)) {
-            if (valueStr.empty() || (value >= 0 && value <= 1000)) {
-                std::cerr << "Error: bad input => " << line << std::endl;
-            }
             continue;
         }
 
@@ -136,15 +153,15 @@ void BitcoinExchange::processInput(const std::string& filename) {
             return;
         }
 
-        std::map<std::string, float>::const_iterator it = _db.lower_bound(date);
+        std::map<std::string, float>::const_iterator it = _db.upper_bound(date);
         
-        if (it == _db.end() || it->first != date) {
-            if (it == _db.begin()) {
-                std::cerr << "Error: no valid older date found for => " << date << std::endl;
-                continue;
-            }
-            --it;
+        // if (it == _db.end() || it->first != date) {
+        if (it == _db.begin()) {
+            std::cerr << "Error: no valid older date found for => " << date << std::endl;
+            continue;
         }
+        --it;
+        // }
         std::cout << date << " => " << value << " = " << (value * it->second) << std::endl;
     }
 }
