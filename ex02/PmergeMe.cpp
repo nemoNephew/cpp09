@@ -19,7 +19,7 @@ PmergeMe::~PmergeMe() {}
 void PmergeMe::parse(int argc, char** argv) {
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
-        if (arg.empty() || arg.find_first_not_of("0123456789+") != std::string::npos) {
+        if (arg.empty() || arg.find_first_not_of("0123456789") != std::string::npos) {
             std::cerr << "Error" << std::endl;
             exit(1);
         }
@@ -64,7 +64,7 @@ std::vector<int> PmergeMe::generateInsertionSequence(int size) {
         for (int j = start; j >= lastJacob; --j) {
             seq.push_back(j);
         }
-        lastJacob = currentJacob - 1;
+        lastJacob = currentJacob;
     }
     return seq;
 }
